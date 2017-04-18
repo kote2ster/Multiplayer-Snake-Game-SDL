@@ -1,8 +1,14 @@
 # depslib dependency file v1.0
-1490193793 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/main.cpp
+1492553928 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/main.cpp
 	<cstdlib>
+	<iostream>
+	<map>
+	<math.h>
+	<vector>
+	<algorithm>
 	<stdlib.h>
 	"SDL.h"
+	"level.h"
 
 1457863494 /usr/include/SDL/SDL.h
 	"SDL_main.h"
@@ -184,4 +190,8 @@
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
+
+1490783719 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/controls.cpp
+
+1492551952 /home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/level.h
 
