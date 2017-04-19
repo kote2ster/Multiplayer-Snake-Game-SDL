@@ -36,13 +36,28 @@
 		<Linker>
 			<Add option="`sdl-config --libs`" />
 		</Linker>
-		<Unit filename="cb.bmp" />
+		<Unit filename="Bullet.cpp" />
+		<Unit filename="Bullet.h" />
+		<Unit filename="CNet.cpp" />
+		<Unit filename="CNet.h" />
+		<Unit filename="GlobalTypes.h" />
+		<Unit filename="HandleEvents.cpp" />
+		<Unit filename="NetApp.cpp" />
+		<Unit filename="NetApp.h" />
+		<Unit filename="controls.cpp" />
+		<Unit filename="controls.h" />
+		<Unit filename="level.cpp" />
 		<Unit filename="level.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="snake.cpp" />
+		<Unit filename="snake.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
 			<envvars />
+			<lib_finder>
+				<lib name="SDL_net" />
+			</lib_finder>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

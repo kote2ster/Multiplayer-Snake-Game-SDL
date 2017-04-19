@@ -1,44 +1,27 @@
 #ifndef LEVEL_H_INCLUDED
 #define LEVEL_H_INCLUDED
 
-enum {__EMPTY, SNK_POS, LVL_BND};
-typedef enum state {GAME_RUN, GAME_PAUSE, GAME_OVER} state;
+#include <map>
+#include "SDL.h"
+#include "GlobalTypes.h"
+#include "NetApp.h"
 
-state gameState = GAME_RUN;
+extern float deltaTime;
+extern state gameState;
 
-const float snakeSpeed = 50;
-const float bulletSpeed = 100;
-const float discreteBlocks = 30;
+extern CNetInterface* app;
 
-typedef enum Snake_Dir
-{
-    DIR_LEFT,
-    DIR_UP,
-    DIR_RIGHT,
-    DIR_DOWN
-} Snake_Dir, Dir;
+extern SDL_Surface* screen;
+extern SDL_Surface* bmp_bound;
 
-typedef struct Snake_Pos
-{
-    float x, y;
-} Snake_Pos, Pos;
+extern const float discreteBlocks;
 
-int snakeLevelPosX = 0;
-int snakeLevelPosY = 0;
+void DrawLevel();
 
-const int levelSize = 11;
-char level[levelSize][levelSize] = {
-        {LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, SNK_POS, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, __EMPTY, LVL_BND},
-        {LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND, LVL_BND}
-    };
+class Level {
+public:
+    static const int size = 11;
+    static char map[size][size];
+};
 
 #endif // LEVEL_H_INCLUDED
