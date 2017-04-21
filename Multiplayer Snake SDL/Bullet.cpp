@@ -16,9 +16,19 @@ void UpdateBulletLevel(Bullet *bullet)
     switch( Level::map[bullet->levelPosX][bullet->levelPosY] ) {
         case __EMPTY:
             break;
-        case SNK_POS:
+        //case SNK_POS:
         case LVL_BND:
             bullet->markForDelete = true;
+            break;
+        default:
+            bullet->markForDelete = true;
+            Level::map[bullet->levelPosX][bullet->levelPosY] = __EMPTY;
+            for(unsigned int i=0;i<snakes.size();i++) {
+                if(snakes[i].levelPosX==bullet->levelPosX&&snakes[i].levelPosY==bullet->levelPosY) {
+                    Level::map[bullet->levelPosX][bullet->levelPosY] = snakes[i].color;
+                    snakes[i].dead = true;
+                }
+            }
             break;
     }
 }
@@ -28,11 +38,11 @@ bool NeedsToBeDeleted(Bullet bullet){ return bullet.markForDelete; }
 void UpdateBulletMove() {
     if(fireBullet) {
         Bullet bullet;
-        bullet.dir = currSnakeDir;
-        bullet.pos = snakePos;
-        bullet.screenPos = snakeScreenPos;
-        bullet.levelPosX = snakeLevelPosX;
-        bullet.levelPosY = snakeLevelPosY;
+        bullet.dir = snakes[playerColor].currDir;
+        bullet.pos = snakes[playerColor].pos;
+        bullet.screenPos = snakes[playerColor].screenPos;
+        bullet.levelPosX = snakes[playerColor].levelPosX;
+        bullet.levelPosY = snakes[playerColor].levelPosY;
         bullet.markForDelete = false;
         bullets.push_back(bullet);
         fireBullet = false;

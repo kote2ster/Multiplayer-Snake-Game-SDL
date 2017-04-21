@@ -1,7 +1,7 @@
 #ifndef GLOBALTYPES_H_INCLUDED
 #define GLOBALTYPES_H_INCLUDED
 
-enum {__EMPTY, SNK_POS, LVL_BND};
+enum {SNK_RED=0, SNK_YEL=1, __EMPTY, LVL_BND};
 typedef enum state {GAME_RUN, GAME_PAUSE, GAME_OVER} state;
 typedef enum NetType {SERVER, CLIENT} NetType;
 

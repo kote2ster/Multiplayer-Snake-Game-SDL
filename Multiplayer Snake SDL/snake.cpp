@@ -1,106 +1,120 @@
 #include <math.h>
+#include <vector>
 #include "level.h"
+#include "snake.h"
 
-Snake_Dir nextSnakeDir = DIR_UP;
-Snake_Dir currSnakeDir = DIR_UP;
+const float snakeSpeed = 50;
 
-const float snakeSpeed = 0;//50;
+char playerColor = SNK_RED;
 
-SDL_Rect snakeScreenPos;
-Snake_Pos snakePos;
-int snakeLevelPosX = 0;
-int snakeLevelPosY = 0;
+std::vector<Snake> snakes;
 
 SDL_Surface* bmp_snake;
 SDL_Surface* bmp_snake_dead;
 
-void UpdateSnakeLevel()
+void UpdateSnakeLevel(Snake *snake)
 {
-    switch( Level::map[snakeLevelPosX][snakeLevelPosY] ) {
+    switch( Level::map[snake->levelPosX][snake->levelPosY] ) {
         case __EMPTY:
-            Level::map[snakeLevelPosX][snakeLevelPosY] = SNK_POS;
+            Level::map[snake->levelPosX][snake->levelPosY] = snake->color;
             break;
-        case SNK_POS:
-        case LVL_BND:
-            gameState = GAME_OVER;
+        //case SNK_POS:
+        //case LVL_BND:
+        default:
+            snake->dead = true;
+            //gameState = GAME_OVER;
             break;
     }
 
-    switch(currSnakeDir) {
+    switch(snake->currDir) {
         case DIR_LEFT:
-            if(nextSnakeDir != DIR_RIGHT) currSnakeDir = nextSnakeDir;
+            if(snake->nextDir != DIR_RIGHT) snake->currDir = snake->nextDir;
         break;
         case DIR_RIGHT:
-            if(nextSnakeDir != DIR_LEFT)  currSnakeDir = nextSnakeDir;
+            if(snake->nextDir != DIR_LEFT)  snake->currDir = snake->nextDir;
         break;
         case DIR_UP:
-            if(nextSnakeDir != DIR_DOWN)  currSnakeDir = nextSnakeDir;
+            if(snake->nextDir != DIR_DOWN)  snake->currDir = snake->nextDir;
         break;
         case DIR_DOWN:
-            if(nextSnakeDir != DIR_UP)    currSnakeDir = nextSnakeDir;
+            if(snake->nextDir != DIR_UP)    snake->currDir = snake->nextDir;
         break;
     }
 }
 
 void UpdateSnakeMove()
 {
-    if       ( snakeScreenPos.x >= (snakeLevelPosX + 1) * discreteBlocks  + (discreteBlocks - bmp_snake->w)/2 ) {
-        snakeLevelPosX++;
-        UpdateSnakeLevel();
+    for(unsigned int i=0; i<snakes.size();i++) {
+        if(!snakes[i].dead) {
+            if       ( snakes[i].screenPos.x >= (snakes[i].levelPosX + 1) * discreteBlocks  + (discreteBlocks - bmp_snake->w)/2 ) {
+                snakes[i].levelPosX++;
+                UpdateSnakeLevel(&snakes[i]);
+            } else if( snakes[i].screenPos.x <= (snakes[i].levelPosX - 1) * discreteBlocks - (discreteBlocks - bmp_snake->w)/2 ) {
+                snakes[i].levelPosX--;
+                UpdateSnakeLevel(&snakes[i]);
+            } else if( snakes[i].screenPos.y >= (snakes[i].levelPosY + 1) * discreteBlocks + (discreteBlocks - bmp_snake->h)/2 ) {
+                snakes[i].levelPosY++;
+                UpdateSnakeLevel(&snakes[i]);
+            } else if( snakes[i].screenPos.y <= (snakes[i].levelPosY - 1) * discreteBlocks - (discreteBlocks - bmp_snake->h)/2 ) {
+                snakes[i].levelPosY--;
+                UpdateSnakeLevel(&snakes[i]);
+            }
 
-    } else if( snakeScreenPos.x <= (snakeLevelPosX - 1) * discreteBlocks - (discreteBlocks - bmp_snake->w)/2 ) {
-        snakeLevelPosX--;
-        UpdateSnakeLevel();
-    } else if( snakeScreenPos.y >= (snakeLevelPosY + 1) * discreteBlocks + (discreteBlocks - bmp_snake->h)/2 ) {
-        snakeLevelPosY++;
-        UpdateSnakeLevel();
-    } else if( snakeScreenPos.y <= (snakeLevelPosY - 1) * discreteBlocks - (discreteBlocks - bmp_snake->h)/2 ) {
-        snakeLevelPosY--;
-        UpdateSnakeLevel();
+            switch(snakes[i].currDir)
+            {
+            case DIR_LEFT:
+                snakes[i].pos.x -= deltaTime*snakeSpeed;
+                break;
+            case DIR_RIGHT:
+                snakes[i].pos.x += deltaTime*snakeSpeed;
+                break;
+            case DIR_UP:
+                snakes[i].pos.y -= deltaTime*snakeSpeed;
+                break;
+            case DIR_DOWN:
+                snakes[i].pos.y += deltaTime*snakeSpeed;
+                break;
+            default:
+                break;
+            }
+
+            snakes[i].screenPos.x = roundf(snakes[i].pos.x);
+            snakes[i].screenPos.y = roundf(snakes[i].pos.y);
+        }
     }
-
-    switch(currSnakeDir)
-    {
-    case DIR_LEFT:
-        snakePos.x -= deltaTime*snakeSpeed;
-        break;
-    case DIR_RIGHT:
-        snakePos.x += deltaTime*snakeSpeed;
-        break;
-    case DIR_UP:
-        snakePos.y -= deltaTime*snakeSpeed;
-        break;
-    case DIR_DOWN:
-        snakePos.y += deltaTime*snakeSpeed;
-        break;
-    default:
-        break;
-    }
-
-    snakeScreenPos.x = roundf(snakePos.x);
-    snakeScreenPos.y = roundf(snakePos.y);
 }
 
-void DrawSnakeDead() {
-    SDL_Rect* rect = new SDL_Rect();
-    rect->x = snakeLevelPosX*discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
-    rect->y = snakeLevelPosY*discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
-    SDL_BlitSurface(bmp_snake_dead, 0, screen, rect);
+void DrawDeadSnake() {
+    static SDL_Rect* rect = new SDL_Rect();
+    static bool noticePlayerDead = true;
+    if(noticePlayerDead && snakes[playerColor].dead) {
+        std::cout << "You are dead!" << std::endl;
+        noticePlayerDead=false;
+    }
+    for(unsigned int i=0; i<snakes.size();i++) {
+        if(snakes[i].dead) {
+            rect->x = snakes[i].levelPosX*discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
+            rect->y = snakes[i].levelPosY*discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
+            SDL_BlitSurface(bmp_snake_dead, 0, screen, rect);
+        }
+    }
 }
 
 void DrawSnake() {
     // draw snake trace bitmap
-    for(int i=0; i<Level::size; i++) {
-        for(int j=0; j<Level::size; j++) {
-            if(Level::map[i][j] == SNK_POS) {
-                static SDL_Rect* rect = new SDL_Rect();
-                rect->x = i*discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
-                rect->y = j*discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
-                SDL_BlitSurface(bmp_snake, 0, screen, rect);
+    for(unsigned int k=0; k<snakes.size();k++) {
+        for(int i=0; i<Level::sizeX; i++) {
+            for(int j=0; j<Level::sizeY; j++) {
+                if(Level::map[i][j] == snakes[k].color) {
+                    static SDL_Rect* rect = new SDL_Rect();
+                    rect->x = i*discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
+                    rect->y = j*discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
+                    SDL_BlitSurface(bmp_snake, 0, screen, rect);
+                }
             }
         }
-    }
 
-    // draw moving snake bitmap
-    SDL_BlitSurface(bmp_snake, 0, screen, &snakeScreenPos);
+        // draw moving snake bitmap
+        SDL_BlitSurface(bmp_snake, 0, screen, &snakes[k].screenPos);
+    }
 }

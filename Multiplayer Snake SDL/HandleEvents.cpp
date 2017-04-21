@@ -1,7 +1,9 @@
 #include <map>
 #include "SDL.h"
 #include "level.h"
+#include "snake.h"
 
+extern bool restart;
 extern bool done;
 extern Snake_Dir nextSnakeDir;
 extern bool fireBullet;
@@ -33,24 +35,30 @@ void HandleEvents()
                 break;
             case SDLK_LEFT:
                 pressedKey[SDLK_LEFT] = true;
-                nextSnakeDir = DIR_LEFT;
+                snakes[playerColor].nextDir = DIR_LEFT;
                 break;
             case SDLK_UP:
                 pressedKey[SDLK_UP] = true;
-                nextSnakeDir = DIR_UP;
+                snakes[playerColor].nextDir = DIR_UP;
                 break;
             case SDLK_RIGHT:
                 pressedKey[SDLK_RIGHT] = true;
-                nextSnakeDir = DIR_RIGHT;
+                snakes[playerColor].nextDir = DIR_RIGHT;
                 break;
             case SDLK_DOWN:
                 pressedKey[SDLK_DOWN] = true;
-                nextSnakeDir = DIR_DOWN;
+                snakes[playerColor].nextDir = DIR_DOWN;
                 break;
             case SDLK_SPACE:
                 pressedKey[SDLK_SPACE] = true;
                 app->SendMsg();
-                fireBullet = true;
+                if(!snakes[playerColor].dead)
+                    fireBullet = true;
+                break;
+            case SDLK_r:
+                pressedKey[SDLK_r] = true;
+                if(playerColor == SNK_RED) // Only server can restart
+                    restart = true;
                 break;
             default:
                 break;
