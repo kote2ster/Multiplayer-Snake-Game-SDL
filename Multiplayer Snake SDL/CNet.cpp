@@ -147,8 +147,7 @@ void CTcpSocket::OnReady() {
 
 
 // *** CHostSocket ***
-CHostSocket::CHostSocket (CIpAddress& the_ip_address) {
-    CTcpSocket();
+CHostSocket::CHostSocket (CIpAddress& the_ip_address) : CTcpSocket() {
     IPaddress iph = the_ip_address.GetIpAddress();
     if (!(m_Socket = SDLNet_TCP_Open(&iph))) {
             SDLNet_FreeSocketSet(set);
@@ -156,13 +155,12 @@ CHostSocket::CHostSocket (CIpAddress& the_ip_address) {
     }
 }
 
-CHostSocket::CHostSocket (Uint16 port) {
+CHostSocket::CHostSocket (Uint16 port) : CTcpSocket() {
     CIpAddress iplistener (port);
     if (!iplistener.Ok()) {
         m_Socket = NULL;
     }
     else {
-        CTcpSocket();
         IPaddress iph = iplistener.GetIpAddress();
         if (!(m_Socket = SDLNet_TCP_Open(&iph))) {
             SDLNet_FreeSocketSet(set);
@@ -187,17 +185,16 @@ void CHostSocket::OnReady() {
 
 
 // *** CClientSocket ***
-CClientSocket::CClientSocket() {
-    CTcpSocket();
+CClientSocket::CClientSocket() : CTcpSocket() {
+
 }
 
-CClientSocket::CClientSocket (std::string host, Uint16 port) {
+CClientSocket::CClientSocket (std::string host, Uint16 port) : CTcpSocket() {
     CIpAddress remoteip (host.c_str(), port);
     if (!remoteip.Ok()) {
         m_Socket = NULL;
     }
     else {
-        CTcpSocket();
         Connect(remoteip);
     }
 }
@@ -228,8 +225,8 @@ void CClientSocket::SetSocket (TCPsocket the_sdl_socket) {
         m_RemoteIp.SetIp(*ips);
         Uint32 hbo = m_RemoteIp.GetHost();
         Uint16 pbo = m_RemoteIp.GetPort();
-        std::cout << "Client connected: " << SDLNet_Read32(&hbo) << ' '
-            << SDLNet_Read16 (&pbo) << std::endl;
+        //std::cout << "Client connected: " << SDLNet_Read32(&hbo) << ' '
+            //<< SDLNet_Read16 (&pbo) << std::endl;
     }
     else
         std::cerr << "SDLNet_TCP_GetPeerAddress: " << SDLNet_GetError() << std::endl;

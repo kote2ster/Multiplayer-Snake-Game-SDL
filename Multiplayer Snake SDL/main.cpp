@@ -31,6 +31,9 @@ extern void HandleEvents();
 
 int main ( int argc, char** argv )
 {
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDLNet_Init();
+
     std::cout << "Setup as: " << std::endl << " 1., Server" << std::endl << " 2., Client" << std::endl;
     int choice;
     bool valid = false;
@@ -51,7 +54,19 @@ int main ( int argc, char** argv )
         app = new CNetHost();
     } else {
         std::cout << "Setting up as client!" << std::endl;
-        playerColor = SNK_YEL;
+        std::cout << "Choose your color: " << std::endl << " 1., Yellow" << std::endl;
+        valid = false;
+        do {
+            std::cin >> choice;
+            std::cin.clear();
+            std::cin.ignore(1000, '\n');
+            if(choice == 1)
+                valid = true;
+            else
+                std::cout << "Invalid input!" << std::endl;
+        } while(!valid);
+        if(choice == 1)
+            playerColor = SNK_YEL;
         app = new CNetClient();
     }
 
@@ -120,11 +135,11 @@ void Drawing() {
 
 int InitSDL() {
     // initialize SDL video
-    if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-    {
-        printf( "Unable to init SDL: %s\n", SDL_GetError() );
-        return 1;
-    }
+    //if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+    //{
+       // printf( "Unable to init SDL: %s\n", SDL_GetError() );
+       // return 1;
+    //}
 
     // make sure SDL cleans up before exit
     atexit(SDL_Quit);

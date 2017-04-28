@@ -1,124 +1,128 @@
+#include <iostream>
 #include "NetApp.h"
+#include "snake.h"
+#include "Bullet.h"
 
-// *** CNetMessageApp ***
-int CNetMessageApp::NumToLoad(){
-	if (state == EMPTY)
-		return 1;
-	else
-		return 0;
-}
+typedef struct Snake_TCP_Data {
+    char playerColor;
+    Snake_Dir nextSnakeDir;
+    bool fireBullet;
+} Snake_TCP_Data;
 
-int CNetMessageApp::NumToUnLoad() {
-	if (state == FULL)
-		return 1;
-	else
-		return 0;
-}
-
-void CNetMessageApp::LoadByte(char ID) {
-	charbuf c;
-	c[0] = ID;
-	LoadBytes(c, 1);
-	finish();
-}
-
-char CNetMessageApp::UnLoadByte() {
-   charbuf c;
-   UnLoadBytes (c);
-   return c[0];
-}
+Snake_TCP_Data sendData;
+Snake_TCP_Data receivedData;
 
 // *** CNetHost ***
-CNetHost::CNetHost() {
-    tcplistener = new CHostSocket(1234);
-    if(!tcplistener->Ok())
-        exit(EXIT_FAILURE);
+CNetHost::CNetHost()
+{
+    SDLNet_ResolveHost(&ip, NULL, 1234);
 
-    tcpclient = new CClientSocket();
+    server = SDLNet_TCP_Open(&ip);
 
-    connected = false;
+    sendData.playerColor = playerColor;
+    sendData.nextSnakeDir = DIR_UP;
+    sendData.fireBullet = false;
 }
 
-CNetHost::~CNetHost() {
-    if(tcplistener) delete tcplistener;
-    if(tcpclient) delete tcpclient;
+CNetHost::~CNetHost()
+{
+
 }
 
-void CNetHost::HandleConnection() {
-    if(!connected) {
-        // if not connected, listen to the port to detect if there is a client waiting there
-        if(tcplistener->Accept(*tcpclient)) {
-            connected = true;
-        }
-    } else {
-        // if connected, checks the socket for messages ready to be read
-        if(tcpclient->Ready()) {
-            // if there is a message, try to receive it. In case of disconnection, the TCP protocol sends a message with no bytes
-            if(tcpclient->Receive(msg)) {
-                // if there is a valid message
-                std::cout << msg.UnLoadByte();
-            } else {
-                connected = false;
+void CNetHost::HandleConnection()
+{
+    //static const char* hello = "HELLO CLIENT";
+    client = SDLNet_TCP_Accept(server);
+    if(client) {
+        if( SDLNet_TCP_Recv(client, &receivedData, sizeof(receivedData)) > 0 ) {
+            snakes[receivedData.playerColor].nextDir = receivedData.nextSnakeDir;
+            if(receivedData.fireBullet) {
+                Bullet bullet;
+                bullet.dir = snakes[receivedData.playerColor].currDir;
+                bullet.pos = snakes[receivedData.playerColor].pos;
+                bullet.screenPos = snakes[receivedData.playerColor].screenPos;
+                bullet.levelPosX = snakes[receivedData.playerColor].levelPosX;
+                bullet.levelPosY = snakes[receivedData.playerColor].levelPosY;
+                bullet.markForDelete = false;
+                bullets.push_back(bullet);
             }
         }
+        sendData.nextSnakeDir = snakes[playerColor].nextDir;
+        sendData.fireBullet = fireBullet;
+        SDLNet_TCP_Send(client, &sendData, sizeof(sendData));
     }
 }
 
-void CNetHost::SendMsg() {
+void CNetHost::SendMsg()
+{
 
 }
 
 // *** CNetClient ***
-CNetClient::CNetClient() {
-    tcpclient = new CClientSocket();
+CNetClient::CNetClient()
+{
+    //tcpclient = new CClientSocket();
 
     std::cout << "Enter IP address of the Server: ";
     bool valid = false;
-    do {
-        std::string ip;
-        std::cin >> ip;
+    do
+    {
+        std::string ipstr;
+        std::cin >> ipstr;
         std::cin.clear();
         std::cin.ignore(1000, '\n');
-        CIpAddress ipAddr(ip, 1234);
-        if(ipAddr.Ok()) {
-            remoteip = new CIpAddress(ipAddr);
-            valid = true;
-        } else {
+        //CIpAddress ipAddr(ip, 1234);
+        if(SDLNet_ResolveHost(&ip, ipstr.c_str(), 1234) < 0)
+        {
+            //remoteip = new CIpAddress(ipAddr);
+            std::cerr << "SDLNet_ResolveHost: " << SDLNet_GetError() << std::endl;
             std::cerr << "Could not connect to IP address!" << std::endl;
             std::cout << "Enter IP address of the Server: ";
         }
-    } while(!valid);
-
-    connected = false;
-}
-
-CNetClient::~CNetClient() {
-    if(remoteip) delete remoteip;
-    if(tcpclient) delete tcpclient;
-}
-
-void CNetClient::HandleConnection() {
-    // if not connected, listen to the port to detect if there is a client waiting there
-    if(!connected) {
-        if(tcpclient->Connect(*remoteip)) {
-            if(tcpclient->Ok())
-                connected = true;
+        else
+        {
+            valid = true;
         }
-    } else {
-        // if connected, checks the socket for messages ready to be read
-        if(tcpclient->Ready()) {
-            // if there is a message, try to receive it. In case of disconnection, the TCP protocol sends a message with no bytes
-            if(tcpclient->Receive(msg)) {
-                // if there is a valid message
-                std::cout << msg.UnLoadByte();
+    }
+    while(!valid);
+
+    sendData.playerColor = playerColor;
+    sendData.nextSnakeDir = DIR_UP;
+    sendData.fireBullet = false;
+}
+
+CNetClient::~CNetClient()
+{
+
+}
+
+void CNetClient::HandleConnection()
+{
+    client = SDLNet_TCP_Open(&ip);
+    if(client) {
+        sendData.nextSnakeDir = snakes[playerColor].nextDir;
+        sendData.fireBullet = fireBullet;
+        SDLNet_TCP_Send(client, &sendData, sizeof(sendData));
+        //client = SDLNet_TCP_Open(&ip);
+        if( SDLNet_TCP_Recv(client, &receivedData, sizeof(receivedData)) > 0 ){
+            snakes[receivedData.playerColor].nextDir = receivedData.nextSnakeDir;
+            if(receivedData.fireBullet) {
+                Bullet bullet;
+                bullet.dir = snakes[receivedData.playerColor].currDir;
+                bullet.pos = snakes[receivedData.playerColor].pos;
+                bullet.screenPos = snakes[receivedData.playerColor].screenPos;
+                bullet.levelPosX = snakes[receivedData.playerColor].levelPosX;
+                bullet.levelPosY = snakes[receivedData.playerColor].levelPosY;
+                bullet.markForDelete = false;
+                bullets.push_back(bullet);
             }
-        } else {
-            connected = false;
         }
     }
 }
 
-void CNetClient::SendMsg() {
-    msg.LoadByte('a');
-    tcpclient->Send(msg);
+void CNetClient::SendMsg()
+{
+    //static const char* hello = "ASD";
+    //client = SDLNet_TCP_Open(&ip);
+    //SDLNet_TCP_Send(client, &sendData, sizeof(sendData));
 }

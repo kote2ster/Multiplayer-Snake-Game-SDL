@@ -1,9 +1,10 @@
+#include <iostream>
 #include <math.h>
 #include <vector>
 #include "level.h"
 #include "snake.h"
 
-const float snakeSpeed = 50;
+const float snakeSpeed = 0;//50;
 
 char playerColor = SNK_RED;
 

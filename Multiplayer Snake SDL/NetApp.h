@@ -1,25 +1,8 @@
 #ifndef NETAPP_H_INCLUDED
 #define NETAPP_H_INCLUDED
 
-#include "CNet.h"
+#include "SDL_net.h"
 #include "GlobalTypes.h"
-
-class CNetMessageApp : public CNetMessage {
-private:
-    //Virtual function that indicates how many bytes may have to be loaded onto the object. Overrides the parent class function member to work with only a byte
-    virtual int NumToLoad();
-
-    //Virtual function that indicates how many bytes may have to be downloaded from the object. Overrides the parent class function member to work with only a byte
-    virtual int NumToUnLoad();
-
-public:
-
-    //Function simpler than LoadBytes(), inherited from the parent class, as it only works with one byte
-    void LoadByte(char);
-
-    //Function simpler than UnLoadBytes(), inherited from the parent class, as it only works with one byte
-    char UnLoadByte();
-};
 
 class CNetInterface {
 public:
@@ -29,10 +12,9 @@ public:
 
 class CNetHost : public CNetInterface {
 private:
-    CHostSocket* tcplistener;
-    CClientSocket* tcpclient;
-    CNetMessageApp msg;
-    bool connected;
+    IPaddress ip;
+    TCPsocket server;
+    TCPsocket client;
 public:
     CNetHost();
     ~CNetHost();
@@ -43,10 +25,8 @@ public:
 
 class CNetClient : public CNetInterface {
 private:
-    CClientSocket* tcpclient;
-    CIpAddress* remoteip;
-    CNetMessageApp msg;
-    bool connected;
+    IPaddress ip;
+    TCPsocket client;
 public:
     CNetClient();
     ~CNetClient();

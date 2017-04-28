@@ -10,6 +10,7 @@ typedef struct Snake {
     int levelPosY;
     Snake_Dir nextDir;
     Snake_Dir currDir;
+    bool fireBullet;
     bool dead;
 } Snake;
 
