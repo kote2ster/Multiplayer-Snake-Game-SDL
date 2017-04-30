@@ -1,1 +1,1 @@
-# Multiplayer Snake Game in SDL on Linux platform
+# Multiplayer Snake Game in SDL
