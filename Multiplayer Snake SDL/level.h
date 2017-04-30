@@ -18,8 +18,11 @@ extern const float discreteBlocks;
 
 extern const SDL_Rect redSnakeDefaultPos;
 extern const SDL_Rect yelSnakeDefaultPos;
+extern const SDL_Rect bluSnakeDefaultPos;
+extern const SDL_Rect grnSnakeDefaultPos;
 
 void DrawLevel();
+void CheckForWinner();
 
 class Level {
 public:

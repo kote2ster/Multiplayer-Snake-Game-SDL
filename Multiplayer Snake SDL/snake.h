@@ -15,20 +15,14 @@ typedef struct Snake {
 } Snake;
 
 extern char playerColor;
+extern char serverColor;
 extern std::vector<Snake> snakes;
-
-extern Snake_Dir nextSnakeDir;
-extern Snake_Dir currSnakeDir;
-
-extern SDL_Rect snakeScreenPos;
-extern Snake_Pos snakePos;
-extern int snakeLevelPosX;
-extern int snakeLevelPosY;
 
 extern SDL_Surface* bmp_snake;
 extern SDL_Surface* bmp_snake_dead;
 
 void UpdateSnakeLevel();
+void UpdateAliveSnakeMove(char i);
 void UpdateSnakeMove();
 void DrawDeadSnake();
 void DrawSnake();

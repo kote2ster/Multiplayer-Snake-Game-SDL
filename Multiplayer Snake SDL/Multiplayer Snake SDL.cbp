@@ -41,13 +41,14 @@
 		<Unit filename="Bullet.h" />
 		<Unit filename="GlobalTypes.h" />
 		<Unit filename="HandleEvents.cpp" />
-		<Unit filename="NetApp.cpp" />
 		<Unit filename="NetApp.h" />
-		<Unit filename="controls.cpp" />
-		<Unit filename="controls.h" />
+		<Unit filename="NetAppClient.cpp" />
+		<Unit filename="NetAppServer.cpp" />
 		<Unit filename="level.cpp" />
 		<Unit filename="level.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="setup.cpp" />
+		<Unit filename="setup.h" />
 		<Unit filename="snake.cpp" />
 		<Unit filename="snake.h" />
 		<Extensions>

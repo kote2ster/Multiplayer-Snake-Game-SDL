@@ -5,6 +5,7 @@
 
 #include "SDL.h"
 #include "GlobalTypes.h"
+#include "snake.h"
 
 typedef struct {
     SDL_Rect screenPos;
@@ -25,5 +26,6 @@ void UpdateBulletLevel(Bullet *bullet);
 void UpdateBulletMove();
 
 void DrawBullets();
+void CreateBullet(Snake* snake);
 
 #endif // BULLET_H_INCLUDED

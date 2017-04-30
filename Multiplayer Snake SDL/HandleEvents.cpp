@@ -7,6 +7,7 @@ extern bool restart;
 extern bool done;
 extern Snake_Dir nextSnakeDir;
 extern bool fireBullet;
+extern Uint32 bulletFireReload;
 
 std::map<SDLKey, bool> pressedKey;
 
@@ -35,30 +36,50 @@ void HandleEvents()
                 break;
             case SDLK_LEFT:
                 pressedKey[SDLK_LEFT] = true;
-                snakes[playerColor].nextDir = DIR_LEFT;
+                if(playerColor!=SNK_SPECTATE) {
+                    snakes[playerColor].nextDir = DIR_LEFT;
+                    app->SendMsg(playerColor);
+                }
                 break;
             case SDLK_UP:
                 pressedKey[SDLK_UP] = true;
-                snakes[playerColor].nextDir = DIR_UP;
+                if(playerColor!=SNK_SPECTATE) {
+                    snakes[playerColor].nextDir = DIR_UP;
+                    app->SendMsg(playerColor);
+                }
                 break;
             case SDLK_RIGHT:
                 pressedKey[SDLK_RIGHT] = true;
-                snakes[playerColor].nextDir = DIR_RIGHT;
+                if(playerColor!=SNK_SPECTATE) {
+                    snakes[playerColor].nextDir = DIR_RIGHT;
+                    app->SendMsg(playerColor);
+                }
                 break;
             case SDLK_DOWN:
                 pressedKey[SDLK_DOWN] = true;
-                snakes[playerColor].nextDir = DIR_DOWN;
+                if(playerColor!=SNK_SPECTATE) {
+                    snakes[playerColor].nextDir = DIR_DOWN;
+                    app->SendMsg(playerColor);
+                }
                 break;
             case SDLK_SPACE:
                 pressedKey[SDLK_SPACE] = true;
-                app->SendMsg();
-                if(!snakes[playerColor].dead)
-                    fireBullet = true;
+                if(playerColor!=SNK_SPECTATE && !snakes[playerColor].dead) {
+                    static Uint32 reloadCurrTime = 0;
+                    Uint32 reloadNextTime = SDL_GetTicks();
+                    if(reloadNextTime > reloadCurrTime) {
+                        reloadCurrTime = reloadNextTime + bulletFireReload;
+                        fireBullet = true;
+                        app->SendMsg(playerColor);
+                    }
+                }
                 break;
             case SDLK_r:
                 pressedKey[SDLK_r] = true;
-                if(playerColor == SNK_RED) // Only server can restart
+                if(playerColor == serverColor) {// Only server can restart
                     restart = true;
+                    app->SendMsg(playerColor);
+                }
                 break;
             default:
                 break;
@@ -90,6 +111,40 @@ void HandleEvents()
         }
         } // end switch
     } // end of message processing
+}
+
+bool HandleWaitForPlayersEvents()
+{
+    // message processing loop
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        // check for messages
+        switch (event.type)
+        {
+        // exit if the window is closed
+        case SDL_QUIT:
+            done = true;
+            break;
+
+        // check for keypresses
+        case SDL_KEYDOWN:
+        {
+            // exit if ESCAPE is pressed
+            switch(event.key.keysym.sym)
+            {
+            case SDLK_RETURN:
+                return true;
+                break;
+            default:
+                break;
+            }
+
+            break;
+        }
+        }
+    }
+    return false;
 }
 
 /*void UpdateManualMove()

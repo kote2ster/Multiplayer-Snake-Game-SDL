@@ -4,9 +4,10 @@
 #include "level.h"
 #include "snake.h"
 
-const float snakeSpeed = 0;//50;
+const float snakeSpeed = 100;
 
 char playerColor = SNK_RED;
+char serverColor = SNK_RED;
 
 std::vector<Snake> snakes;
 
@@ -41,46 +42,59 @@ void UpdateSnakeLevel(Snake *snake)
             if(snake->nextDir != DIR_UP)    snake->currDir = snake->nextDir;
         break;
     }
+
+    if(playerColor==serverColor) { // Server updates everything
+        app->SendMsg(snake->color);
+    }
+}
+
+void UpdateAliveSnakeMove(char i)
+{
+    if       ( snakes[i].screenPos.x >= (snakes[i].levelPosX + 1) * discreteBlocks + (discreteBlocks - bmp_snake->w)/2 ) {
+        snakes[i].screenPos.x = snakes[i].pos.x = (snakes[i].levelPosX + 1) * discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
+        snakes[i].levelPosX++;
+        UpdateSnakeLevel(&snakes[i]);
+    } else if( snakes[i].screenPos.x <= (snakes[i].levelPosX - 1) * discreteBlocks - (discreteBlocks - bmp_snake->w)/2 ) {
+        snakes[i].screenPos.x = snakes[i].pos.x = (snakes[i].levelPosX - 1) * discreteBlocks - (discreteBlocks - bmp_snake->w)/2;
+        snakes[i].levelPosX--;
+        UpdateSnakeLevel(&snakes[i]);
+    } else if( snakes[i].screenPos.y >= (snakes[i].levelPosY + 1) * discreteBlocks + (discreteBlocks - bmp_snake->h)/2 ) {
+        snakes[i].screenPos.y = snakes[i].pos.y = (snakes[i].levelPosY + 1) * discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
+        snakes[i].levelPosY++;
+        UpdateSnakeLevel(&snakes[i]);
+    } else if( snakes[i].screenPos.y <= (snakes[i].levelPosY - 1) * discreteBlocks - (discreteBlocks - bmp_snake->h)/2 ) {
+        snakes[i].screenPos.y = snakes[i].pos.y = (snakes[i].levelPosY - 1) * discreteBlocks - (discreteBlocks - bmp_snake->h)/2;
+        snakes[i].levelPosY--;
+        UpdateSnakeLevel(&snakes[i]);
+    }
+
+    switch(snakes[i].currDir)
+    {
+    case DIR_LEFT:
+        snakes[i].pos.x -= deltaTime*snakeSpeed;
+        break;
+    case DIR_RIGHT:
+        snakes[i].pos.x += deltaTime*snakeSpeed;
+        break;
+    case DIR_UP:
+        snakes[i].pos.y -= deltaTime*snakeSpeed;
+        break;
+    case DIR_DOWN:
+        snakes[i].pos.y += deltaTime*snakeSpeed;
+        break;
+    default:
+        break;
+    }
+
+    snakes[i].screenPos.x = roundf(snakes[i].pos.x);
+    snakes[i].screenPos.y = roundf(snakes[i].pos.y);
 }
 
 void UpdateSnakeMove()
 {
     for(unsigned int i=0; i<snakes.size();i++) {
         if(!snakes[i].dead) {
-            if       ( snakes[i].screenPos.x >= (snakes[i].levelPosX + 1) * discreteBlocks  + (discreteBlocks - bmp_snake->w)/2 ) {
-                snakes[i].levelPosX++;
-                UpdateSnakeLevel(&snakes[i]);
-            } else if( snakes[i].screenPos.x <= (snakes[i].levelPosX - 1) * discreteBlocks - (discreteBlocks - bmp_snake->w)/2 ) {
-                snakes[i].levelPosX--;
-                UpdateSnakeLevel(&snakes[i]);
-            } else if( snakes[i].screenPos.y >= (snakes[i].levelPosY + 1) * discreteBlocks + (discreteBlocks - bmp_snake->h)/2 ) {
-                snakes[i].levelPosY++;
-                UpdateSnakeLevel(&snakes[i]);
-            } else if( snakes[i].screenPos.y <= (snakes[i].levelPosY - 1) * discreteBlocks - (discreteBlocks - bmp_snake->h)/2 ) {
-                snakes[i].levelPosY--;
-                UpdateSnakeLevel(&snakes[i]);
-            }
-
-            switch(snakes[i].currDir)
-            {
-            case DIR_LEFT:
-                snakes[i].pos.x -= deltaTime*snakeSpeed;
-                break;
-            case DIR_RIGHT:
-                snakes[i].pos.x += deltaTime*snakeSpeed;
-                break;
-            case DIR_UP:
-                snakes[i].pos.y -= deltaTime*snakeSpeed;
-                break;
-            case DIR_DOWN:
-                snakes[i].pos.y += deltaTime*snakeSpeed;
-                break;
-            default:
-                break;
-            }
-
-            snakes[i].screenPos.x = roundf(snakes[i].pos.x);
-            snakes[i].screenPos.y = roundf(snakes[i].pos.y);
+            UpdateAliveSnakeMove(i);
         }
     }
 }
