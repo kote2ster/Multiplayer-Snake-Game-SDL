@@ -8,8 +8,8 @@
 #include "snake.h"
 
 typedef struct {
-    SDL_Rect screenPos;
-    Pos pos;
+    SDL_Rect screenPos; // Position in pixels
+    Pos pos; // More precise position in floats
     Dir dir;
     int levelPosX;
     int levelPosY;

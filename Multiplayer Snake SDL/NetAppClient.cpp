@@ -41,13 +41,7 @@ CNetClient::CNetClient()
     socket_set = SDLNet_AllocSocketSet(1);
     SDLNet_TCP_AddSocket(socket_set, socket);
 
-    sendData.playerColor = playerColor;
-    sendData.nextSnakeDir = DIR_UP;
-    sendData.currSnakeDir = DIR_UP;
-    sendData.fireBullet = false;
-    sendData.restartLevel = false;
-    sendData.dead = false;
-    sendData.pos.x = sendData.pos.y = 0;
+    InitData();
 }
 
 void CNetClient::CloseSocket(void) {
@@ -58,6 +52,7 @@ void CNetClient::CloseSocket(void) {
 
 	SDLNet_FreeSocketSet(socket_set);
 	SDLNet_TCP_Close(socket);
+	exit(-1);
 }
 
 CNetClient::~CNetClient()
@@ -247,4 +242,34 @@ bool CNetClient::WaitForOtherPlayers() {
 	}
 
 	return player.startGame;
+}
+
+void CNetClient::CheckForWinner() {
+    if(receivedData.winnerColor!=__EMPTY) {
+        if(receivedData.winnerColor==playerColor) {
+            std::cout << "You won!" << std::endl;
+        } else {
+            switch(receivedData.winnerColor) {
+                case SNK_RED:
+                std::cout << "Red snake won!" << std::endl;
+                break;
+                case SNK_YEL:
+                std::cout << "Yellow snake won!" << std::endl;
+                break;
+                case SNK_BLU:
+                std::cout << "Blue snake won!" << std::endl;
+                break;
+                case SNK_GRN:
+                std::cout << "Green snake won!" << std::endl;
+                break;
+                case SNK_SPECTATE:
+                std::cout << "Draw!" << std::endl;
+                break;
+                default:
+                break;
+            }
+        }
+        std::cout << "Server can restart the game with R key" << std::endl;
+        gameState = GAME_PAUSE;
+    }
 }

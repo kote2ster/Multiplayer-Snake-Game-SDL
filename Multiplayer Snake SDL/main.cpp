@@ -53,7 +53,7 @@ int main ( int argc, char** argv )
 
         switch(gameState) {
             case GAME_RUN:
-                CheckForWinner();
+                app->CheckForWinner();
                 //UpdateManualMove(&snakePos, &screenPos);
                 UpdateMove();
 
@@ -64,20 +64,21 @@ int main ( int argc, char** argv )
                 // finally, update the screen
                 SDL_Flip(screen);
                 break;
-            case GAME_OVER:
-                std::cout << "Game Over!" << std::endl;
-                SDL_Flip(screen);
-                gameState = GAME_PAUSE;
-                break;
             case GAME_PAUSE:
                 break;
         }
     } // end main loop
 
     // free loaded bitmap
-    SDL_FreeSurface(bmp_snake);
+    SDL_FreeSurface(bmp_snake_red);
+    SDL_FreeSurface(bmp_snake_red_dead);
+    SDL_FreeSurface(bmp_snake_yellow);
+    SDL_FreeSurface(bmp_snake_yellow_dead);
+    SDL_FreeSurface(bmp_snake_blue);
+    SDL_FreeSurface(bmp_snake_blue_dead);
+    SDL_FreeSurface(bmp_snake_green);
+    SDL_FreeSurface(bmp_snake_green_dead);
     SDL_FreeSurface(bmp_bound);
-    SDL_FreeSurface(bmp_snake_dead);
     SDL_FreeSurface(bmp_bullet);
 
     std::cout << "Exited cleanly" << std::endl;

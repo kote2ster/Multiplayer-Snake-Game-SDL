@@ -14,6 +14,7 @@ int InitSDL() {
 
     // create a new window
     screen = SDL_SetVideoMode(Level::sizeX*discreteBlocks+1, Level::sizeY*discreteBlocks+1, 16, SDL_HWSURFACE|SDL_DOUBLEBUF);
+    SDL_WM_SetCaption("Multiplayer Snake game", NULL);
 
     if ( !screen )
     {
@@ -22,11 +23,21 @@ int InitSDL() {
     }
 
     // load images
-    bmp_snake = SDL_LoadBMP("cb.bmp");
+    bmp_snake_red = SDL_LoadBMP("snake_red.bmp");
+    bmp_snake = bmp_snake_red;
+    bmp_snake_red_dead = SDL_LoadBMP("snake_red_dead.bmp");
+    bmp_snake_yellow = SDL_LoadBMP("snake_yellow.bmp");
+    bmp_snake_yellow_dead = SDL_LoadBMP("snake_yellow_dead.bmp");
+    bmp_snake_blue = SDL_LoadBMP("snake_blue.bmp");
+    bmp_snake_blue_dead = SDL_LoadBMP("snake_blue_dead.bmp");
+    bmp_snake_green = SDL_LoadBMP("snake_green.bmp");
+    bmp_snake_green_dead = SDL_LoadBMP("snake_green_dead.bmp");
     bmp_bound = SDL_LoadBMP("boundary.bmp");
-    bmp_snake_dead = SDL_LoadBMP("snake_dead.bmp");
     bmp_bullet = SDL_LoadBMP("bullet.bmp");
-    if (!bmp_snake || !bmp_bound || !bmp_snake_dead || !bmp_bullet)
+    if (!bmp_snake_red || !bmp_snake_red_dead ||
+        !bmp_snake_yellow || !bmp_snake_yellow_dead ||
+        !bmp_snake_blue || !bmp_snake_blue_dead ||
+        !bmp_snake_green || !bmp_snake_green_dead || !bmp_bound || !bmp_bullet)
     {
         printf("Unable to load bitmap: %s\n", SDL_GetError());
         return 1;

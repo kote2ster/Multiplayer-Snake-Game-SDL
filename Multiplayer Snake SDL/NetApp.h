@@ -25,8 +25,10 @@ typedef struct Snake_TCP_Data {
     bool restartLevel;
     bool dead;
     Snake_Pos pos;
+    char winnerColor;
 } Snake_TCP_Data;
 
+void InitData();
 void SynchronizeSnakePos();
 extern int numOfPlayers;
 extern Uint32 previousTime;
@@ -37,6 +39,7 @@ public:
     virtual void HandleConnection() = 0;
     virtual void SendMsg(char snkIdx) = 0;
     virtual bool WaitForOtherPlayers() = 0;
+    virtual void CheckForWinner() = 0;
 };
 
 class CNetHost : public CNetInterface {
@@ -58,6 +61,7 @@ public:
     bool WaitForOtherPlayers();
     void HandleConnection();
     void SendMsg(char snkIdx);
+    void CheckForWinner();
 };
 
 class CNetClient : public CNetInterface {
@@ -76,6 +80,7 @@ public:
     bool WaitForOtherPlayers();
     void HandleConnection();
     void SendMsg(char snkIdx);
+    void CheckForWinner();
 };
 
 #endif // NETAPP_H_INCLUDED

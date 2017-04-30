@@ -12,6 +12,17 @@ int numOfPlayers;
 extern bool HandleWaitForPlayersEvents();
 extern bool restart;
 
+void InitData() {
+    sendData.playerColor  = receivedData.playerColor = playerColor;
+    sendData.nextSnakeDir = receivedData.nextSnakeDir = DIR_UP;
+    sendData.currSnakeDir = receivedData.currSnakeDir = DIR_UP;
+    sendData.fireBullet   = receivedData.fireBullet = false;
+    sendData.restartLevel = receivedData.restartLevel = false;
+    sendData.dead         = receivedData.dead = false;
+    sendData.pos.x = sendData.pos.y = receivedData.pos.x = receivedData.pos.y = 0;
+    sendData.winnerColor  = receivedData.winnerColor = __EMPTY;
+}
+
 // *** CNetHost ***
 CNetHost::CNetHost()
 {
@@ -28,13 +39,7 @@ CNetHost::CNetHost()
     next_ind = 0;
     numOfPlayers = 1;
 
-    sendData.playerColor = playerColor;
-    sendData.nextSnakeDir = DIR_UP;
-    sendData.currSnakeDir = DIR_UP;
-    sendData.fireBullet = false;
-    sendData.restartLevel = false;
-    sendData.dead = false;
-    sendData.pos.x = sendData.pos.y = 0;
+    InitData();
 
     for(int idx=0;idx<MAX_SOCKETS;idx++) sockets[idx] = 0;
 }
@@ -306,4 +311,51 @@ bool CNetHost::WaitForOtherPlayers() {
         }
     }
     return false;
+}
+
+void CNetHost::CheckForWinner() {
+    int snakesAlive = 0;
+    char aliveColor = SNK_SPECTATE;
+    for(unsigned int i=0;i<snakes.size();i++) {
+        if(!snakes[i].dead) {
+            snakesAlive++;
+            aliveColor = snakes[i].color;
+        }
+    }
+    if(snakesAlive==1) {
+        if(aliveColor==playerColor) {
+            std::cout << "You won!" << std::endl;
+        } else {
+            switch(aliveColor) {
+                case SNK_RED:
+                std::cout << "Red snake won!" << std::endl;
+                break;
+                case SNK_YEL:
+                std::cout << "Yellow snake won!" << std::endl;
+                break;
+                case SNK_BLU:
+                std::cout << "Blue snake won!" << std::endl;
+                break;
+                case SNK_GRN:
+                std::cout << "Green snake won!" << std::endl;
+                break;
+            }
+        }
+        std::cout << "Server can restart the game with R key" << std::endl;
+        gameState = GAME_PAUSE;
+        sendData.winnerColor = aliveColor;
+        for(unsigned int i=0; i<snakes.size();i++) {
+            app->SendMsg(snakes[i].color);
+        }
+        sendData.winnerColor = __EMPTY;
+    } else if(snakesAlive==0) {
+        std::cout << "Draw!" << std::endl;
+        std::cout << "Server can restart the game with R key" << std::endl;
+        gameState = GAME_PAUSE;
+        sendData.winnerColor = SNK_SPECTATE;
+        for(unsigned int i=0; i<snakes.size();i++) {
+            app->SendMsg(snakes[i].color);
+        }
+        sendData.winnerColor = __EMPTY;
+    }
 }

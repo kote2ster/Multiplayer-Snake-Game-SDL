@@ -12,7 +12,14 @@ char serverColor = SNK_RED;
 std::vector<Snake> snakes;
 
 SDL_Surface* bmp_snake;
-SDL_Surface* bmp_snake_dead;
+SDL_Surface* bmp_snake_red;
+SDL_Surface* bmp_snake_red_dead;
+SDL_Surface* bmp_snake_yellow;
+SDL_Surface* bmp_snake_yellow_dead;
+SDL_Surface* bmp_snake_blue;
+SDL_Surface* bmp_snake_blue_dead;
+SDL_Surface* bmp_snake_green;
+SDL_Surface* bmp_snake_green_dead;
 
 void UpdateSnakeLevel(Snake *snake)
 {
@@ -110,7 +117,20 @@ void DrawDeadSnake() {
         if(snakes[i].dead) {
             rect->x = snakes[i].levelPosX*discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
             rect->y = snakes[i].levelPosY*discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
-            SDL_BlitSurface(bmp_snake_dead, 0, screen, rect);
+            switch(snakes[i].color) {
+                case SNK_RED:
+                    SDL_BlitSurface(bmp_snake_red_dead, 0, screen, rect);
+                break;
+                case SNK_BLU:
+                    SDL_BlitSurface(bmp_snake_blue_dead, 0, screen, rect);
+                break;
+                case SNK_YEL:
+                    SDL_BlitSurface(bmp_snake_yellow_dead, 0, screen, rect);
+                break;
+                case SNK_GRN:
+                    SDL_BlitSurface(bmp_snake_green_dead, 0, screen, rect);
+                break;
+            }
         }
     }
 }
@@ -124,12 +144,40 @@ void DrawSnake() {
                     static SDL_Rect* rect = new SDL_Rect();
                     rect->x = i*discreteBlocks + (discreteBlocks - bmp_snake->w)/2;
                     rect->y = j*discreteBlocks + (discreteBlocks - bmp_snake->h)/2;
-                    SDL_BlitSurface(bmp_snake, 0, screen, rect);
+                    //SDL_BlitSurface(bmp_snake, 0, screen, rect);
+                    switch(snakes[k].color) {
+                        case SNK_RED:
+                            SDL_BlitSurface(bmp_snake_red, 0, screen, rect);
+                        break;
+                        case SNK_BLU:
+                            SDL_BlitSurface(bmp_snake_blue, 0, screen, rect);
+                        break;
+                        case SNK_YEL:
+                            SDL_BlitSurface(bmp_snake_yellow, 0, screen, rect);
+                        break;
+                        case SNK_GRN:
+                            SDL_BlitSurface(bmp_snake_green, 0, screen, rect);
+                        break;
+                    }
                 }
             }
         }
 
         // draw moving snake bitmap
-        SDL_BlitSurface(bmp_snake, 0, screen, &snakes[k].screenPos);
+        switch(snakes[k].color) {
+            case SNK_RED:
+                SDL_BlitSurface(bmp_snake_red, 0, screen, &snakes[k].screenPos);
+            break;
+            case SNK_BLU:
+                SDL_BlitSurface(bmp_snake_blue, 0, screen, &snakes[k].screenPos);
+            break;
+            case SNK_YEL:
+                SDL_BlitSurface(bmp_snake_yellow, 0, screen, &snakes[k].screenPos);
+            break;
+            case SNK_GRN:
+                SDL_BlitSurface(bmp_snake_green, 0, screen, &snakes[k].screenPos);
+            break;
+        }
+        //SDL_BlitSurface(bmp_snake, 0, screen, &snakes[k].screenPos);
     }
 }
