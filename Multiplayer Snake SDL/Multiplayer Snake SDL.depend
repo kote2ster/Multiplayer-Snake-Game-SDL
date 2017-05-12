@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1493571239 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/main.cpp
+1493580803 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/main.cpp
 	<cstdlib>
 	<iostream>
 	<map>
@@ -227,7 +227,7 @@
 	"level.h"
 	"snake.h"
 
-1493503799 /home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/Bullet.h
+1493583017 /home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/Bullet.h
 	<vector>
 	"SDL.h"
 	"GlobalTypes.h"
@@ -267,7 +267,7 @@
 	"SDL_net.h"
 	"GlobalTypes.h"
 
-1493574187 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/NetAppClient.cpp
+1493588379 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/NetAppClient.cpp
 	<iostream>
 	<math.h>
 	"NetApp.h"
@@ -285,7 +285,7 @@
 
 1493498845 /home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/setup.h
 
-1493571720 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/setup.cpp
+1493578603 source:/home/akos/Projects/Multiplayer-Snake-Game-SDL/Multiplayer Snake SDL/setup.cpp
 	<iostream>
 	"SDL.h"
 	"level.h"
